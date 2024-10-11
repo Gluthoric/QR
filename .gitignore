@@ -68,3 +68,8 @@ frontend/dist/
 *.tmp
 *.bak
 *.swp
+
+frontend/setup.sql
+frontend/src/utils/database.ts
+frontend/src/utils/api.ts
+frontend/start.sh
