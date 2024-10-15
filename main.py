@@ -1,3 +1,4 @@
+import traceback
 # main.py
 
 import os
@@ -21,7 +22,7 @@ import netifaces
 load_dotenv('.env.flask')
 
 # Initialize Flask
-app = Flask(__name__, static_folder='/var/www/html', static_url_path='/')
+app = Flask(__name__, static_folder='dist', static_url_path='')
 
 CORS(app)  # Enable CORS for all routes
 logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
@@ -55,7 +56,6 @@ class CardListItem(db.Model):
     foil_price = db.Column(db.Numeric(10, 2))
     quantity = db.Column(db.Integer, default=1)  # New field for quantity
     card_list = relationship('CardList', back_populates='items')
-
 
 # Global error handler for database errors
 @app.errorhandler(SQLAlchemyError)
@@ -303,15 +303,6 @@ def health_check():
         'database': db_status
     })
 
-# Serve static files like JavaScript and CSS
-@app.route('/assets/<path:filename>')
-def serve_static(filename):
-    return send_from_directory(os.path.join(app.static_folder, 'assets'), filename)
-
-
-# Serve API routes and handle all other requests by returning index.html
-import traceback
-
 @app.errorhandler(Exception)
 def handle_exception(e):
     # Log the full traceback
@@ -319,19 +310,15 @@ def handle_exception(e):
     app.logger.error(traceback.format_exc())
     return jsonify(error=str(e)), 500
 
-# Update the serve_frontend function
-@app.route('/', defaults={'path': ''})
+# Serve the index.html at the root URL
+@app.route('/')
+def serve_index():
+    return send_from_directory(app.static_folder, 'index.html')
+
+# Serve any other files in the /dist directory (like CSS, JS)
 @app.route('/<path:path>')
-def serve_frontend(path):
-    if path != "" and os.path.exists(os.path.join(app.static_folder, path)):
-        return send_from_directory(app.static_folder, path)
-    return send_from_directory(app.static_folder, 'index.html')
-
-
-@app.errorhandler(404)
-def not_found(e):
-    return send_from_directory(app.static_folder, 'index.html')
-
+def serve_static_files(path):
+    return send_from_directory(app.static_folder, path)
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5050)
