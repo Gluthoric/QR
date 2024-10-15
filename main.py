@@ -21,7 +21,7 @@ import netifaces
 load_dotenv('.env.flask')
 
 # Initialize Flask
-app = Flask(__name__, static_folder='dist', static_url_path='/')
+app = Flask(__name__, static_folder='/var/www/html', static_url_path='/')
 
 CORS(app)  # Enable CORS for all routes
 logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
@@ -305,8 +305,9 @@ def health_check():
 
 # Serve static files like JavaScript and CSS
 @app.route('/assets/<path:filename>')
-def serve_static_files(filename):
+def serve_static(filename):
     return send_from_directory(os.path.join(app.static_folder, 'assets'), filename)
+
 
 # Serve API routes and handle all other requests by returning index.html
 import traceback
@@ -322,19 +323,10 @@ def handle_exception(e):
 @app.route('/', defaults={'path': ''})
 @app.route('/<path:path>')
 def serve_frontend(path):
-    logging.info(f"Requested path: {path}")
-    if path.startswith('api'):
-        return jsonify({'error': 'Not found'}), 404
-    try:
-        if path != "" and os.path.exists(os.path.join(app.static_folder, path)):
-            logging.info(f"Serving file: {path}")
-            return send_from_directory(app.static_folder, path)
-        else:
-            logging.info(f"Serving index.html for path: {path}")
-            return send_from_directory(app.static_folder, 'index.html')
-    except Exception as e:
-        logging.error(f"Error serving {path}: {str(e)}")
-        return jsonify({'error': 'Internal server error'}), 500
+    if path != "" and os.path.exists(os.path.join(app.static_folder, path)):
+        return send_from_directory(app.static_folder, path)
+    return send_from_directory(app.static_folder, 'index.html')
+
 
 @app.errorhandler(404)
 def not_found(e):
@@ -342,4 +334,4 @@ def not_found(e):
 
 
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0', port=5000)
+    app.run(debug=True, host='0.0.0.0', port=5050)

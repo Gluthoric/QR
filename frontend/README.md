@@ -1,93 +1,102 @@
-# Card List Manager
+# MTG Card List Manager Frontend
 
-This Flask application manages card lists and interacts with the Scryfall API to fetch card data.
+This is the frontend application for the MTG Card List Manager. It's built with React, TypeScript, and Vite, providing a user-friendly interface for managing Magic: The Gathering card lists.
 
-## Setup
+## Prerequisites
 
-1. Ensure you have Python 3.7+ installed.
-2. Install the required dependencies:
+- Node.js (version 14 or later recommended)
+- npm (comes with Node.js)
+
+## Installation
+
+1. Navigate to the frontend directory:
    ```
-   pip install -r requirements.txt
-   ```
-3. Set up your `.env.flask` file with the following variables:
-   ```
-   DATABASE_URI=your_database_uri
-   SECRET_KEY=your_secret_key
-   REDIS_HOST=your_redis_host
-   REDIS_PORT=your_redis_port
-   REDIS_DB=your_redis_db
+   cd frontend
    ```
 
-## Running the Application
-
-1. Start your Redis server.
-2. Ensure your database server is running and accessible.
-3. Run the Flask application:
+2. Install dependencies:
    ```
-   python main.py
+   npm install
    ```
 
-## Testing the Application
+## Available Scripts
 
-1. Test the health check endpoint:
-   ```
-   curl http://localhost:5000/api/health
-   ```
-   Expected response:
-   ```json
-   {
-     "status": "healthy",
-     "database": "healthy",
-     "redis": "healthy"
-   }
-   ```
+In the project directory, you can run:
 
-2. Test the Redis connection:
-   ```
-   curl http://localhost:5000/api/redis-test
-   ```
-   Expected response: `{"redis_value":"Hello from Redis!"}`
+### `npm run dev`
 
-3. Upload a CSV file:
-   ```
-   curl -X POST -F "file=@path/to/your/file.csv" http://localhost:5000/api/upload
-   ```
-   This should return a JSON response with the new card list ID, name, and card data.
+Runs the app in development mode.
+Open [http://localhost:5173](http://localhost:5173) to view it in the browser.
 
-4. Get a card list:
-   ```
-   curl http://localhost:5000/api/card-list/<list_id>
-   ```
-   Replace `<list_id>` with an ID returned from the upload step.
+### `npm run build`
 
-5. Update a card list name:
-   ```
-   curl -X PATCH -H "Content-Type: application/json" -d '{"name":"New List Name"}' http://localhost:5000/api/card-list/<list_id>
-   ```
-   Replace `<list_id>` with an existing list ID.
+Builds the app for production to the `dist` folder.
 
-## Troubleshooting
+### `npm run lint`
 
-If you encounter any issues:
+Runs the linter to check for code style issues.
 
-1. Check that your database and Redis server are running and accessible.
-2. Verify that your `.env.flask` file contains the correct configuration.
-3. Check the application logs for any error messages.
-4. Ensure that the 'cards' table exists in your database and has the correct schema.
+### `npm run preview`
 
-If problems persist, please open an issue in the project repository.
+Locally preview the production build.
 
-## Recent Updates
+## Project Structure
 
-- Improved database connection handling and transaction management.
-- Enhanced error logging and reporting.
-- Updated health check endpoint to provide more detailed status information.
+```
+frontend/
+├── src/
+│   ├── components/
+│   │   ├── CardGrid.tsx
+│   │   ├── CardList.tsx
+│   │   ├── CardListWrapper.tsx
+│   │   ├── FileUploader.tsx
+│   │   └── QRCodeGenerator.tsx
+│   ├── utils/
+│   │   └── csvProcessor.ts
+│   ├── App.tsx
+│   ├── index.css
+│   ├── main.tsx
+│   ├── types.ts
+│   └── vite-env.d.ts
+├── index.html
+├── package.json
+├── tsconfig.json
+├── vite.config.ts
+└── README.md
+```
 
-## Notes for Developers
+## Key Components
 
-- The application now uses SQLAlchemy's scoped session to manage database connections.
-- Each route handler is responsible for removing the session after use.
-- The `setup_db_events` function includes improved connection ping and invalidation logic.
-- Error handling has been enhanced throughout the application.
+- **CardGrid**: Displays a grid of cards.
+- **CardList**: Renders a list of cards.
+- **CardListWrapper**: Wraps the card list with additional functionality.
+- **FileUploader**: Handles CSV file uploads.
+- **QRCodeGenerator**: Generates QR codes for sharing card lists.
 
-When making changes to the application, please ensure that you maintain proper session management and error handling practices.
+## Styling
+
+This project uses Tailwind CSS for styling. The configuration can be found in `tailwind.config.js`.
+
+## TypeScript
+
+The project is set up with TypeScript. The main configuration file is `tsconfig.json`.
+
+## Building for Production
+
+When you're ready to deploy, run `npm run build`. This will create a `dist` folder with your compiled assets. These files should be served by your backend server.
+
+## Connecting to the Backend
+
+The frontend is designed to work with the Flask backend. Make sure the backend server is running and that the frontend is configured to send requests to the correct URL.
+
+## Contributing
+
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
+
+## License
+
+This project is licensed under the MIT License.
